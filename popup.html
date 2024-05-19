@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Xfinity Credit Checker</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div id="mainPage">
+    <h1>Xfinity Credit Checker</h1>
+    <button id="helpButton">Help & Instructions</button>
+    <button id="loginToXfinity">1. Login to Xfinity</button>
+    <button id="outageCreditEligibility">2. Outage Credit Eligibility Webpage</button>
+    <label for="startDate">Date Range Start Date:</label>
+    <input type="date" id="startDate" name="startDate">
+    <label for="endDate">Date Range End Date:</label>
+    <input type="date" id="endDate" name="endDate">
+    <button id="checkDates">Check Dates</button>
+    <button id="clearResults">Clear Results</button>
+    <div id="results">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="helpPage" style="display: none;">
+    <button id="goBackButton">Go Back</button>
+    <h1>Help & Instructions</h1>
+    <p><strong>Purpose of the Extension</strong></p>
+    <p>This extension helps Xfinity users check their eligibility for outage credits by automating the process of checking multiple dates for credit eligibility.</p>
+    <p><strong>How to Use the Xfinity Credit Checker</strong></p>
+    <p>1. <strong>Login to Xfinity</strong>:</p>
+    <p>Click the "1. Login to Xfinity" button to navigate to the Xfinity login page. Enter your Xfinity credentials to log in to your account.</p>
+    <p>2. <strong>Navigate to the Outage Credit Eligibility Webpage</strong>:</p>
+    <p>Click the "2. Outage Credit Eligibility Webpage" button to navigate to the outage credit eligibility page.</p>
+    <p>3. <strong>Check Outage Dates</strong>:</p>
+    <p>Enter the start date and end date for the date range you want to check. Click the "Check Dates" button. The extension will automatically inject each date in the specified range into the form fields on the webpage, submit the form, and check for eligibility. The results will be displayed in the table with the date and eligibility status.</p>
+    <p>4. <strong>Clear Results</strong>:</p>
+    <p>Click the "Clear Results" button to clear the table of previously checked dates.</p>
+    <p><strong>Additional Documentation</strong></p>
+    <p><strong>Help Button</strong>:</p>
+    <p>Click the "Help" button to view these instructions and additional documentation.</p>
+    <p><strong>Date Range</strong>:</p>
+    <p>Ensure that the start date is not after the end date. The date range should be within the allowed range specified by Xfinity.</p>
+    <p><strong>Results Table</strong>:</p>
+    <p>The results table will show the dates that have been checked and their eligibility status. The table will be updated in real-time as each date is checked.</p>
+    <p><strong>Persistence</strong>:</p>
+    <p>The results table will persist even if you close the popup and reopen it, as long as you do not clear the results.</p>
+    <p><strong>Browser Back Navigation</strong>:</p>
+    <p>The extension will automatically navigate back to the previous page after checking each date to continue checking the next date in the range.</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
