@@ -52,10 +52,6 @@ Outage Credit Checker is a Google Chrome extension designed to help Xfinity user
 5. **Help & Instructions:**
     - Click the "Help" button for detailed instructions and additional documentation on using the extension.
 
-## Support
-
-For support and troubleshooting, please contact [Your Contact Information].
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
