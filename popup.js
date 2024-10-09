@@ -22,6 +22,10 @@ document.getElementById('checkDates').addEventListener('click', () => {
 
   chrome.storage.local.set({ dates, results: [] }, () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length === 0) {
+        console.error('No active tab found.');
+        return;
+      }
       chrome.scripting.executeScript({
         target: { tabId: tabs[0].id },
         func: processDates,
@@ -43,6 +47,10 @@ document.getElementById('loginToXfinity').addEventListener('click', () => {
 
 document.getElementById('outageCreditEligibility').addEventListener('click', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs.length === 0) {
+      console.error('No active tab found.');
+      return;
+    }
     chrome.tabs.update(tabs[0].id, { url: 'https://www.xfinity.com/support/account-management/credits/outage/details' });
   });
 });
@@ -88,16 +96,24 @@ function processDates(dates) {
   }
 
   function clickElement(element) {
-    element.dispatchEvent(createMouseEvent('mousedown'));
-    element.dispatchEvent(createMouseEvent('mouseup'));
-    element.dispatchEvent(createMouseEvent('click'));
+    if (element) {
+      element.dispatchEvent(createMouseEvent('mousedown'));
+      element.dispatchEvent(createMouseEvent('mouseup'));
+      element.dispatchEvent(createMouseEvent('click'));
+    } else {
+      console.error('Element not found for clicking');
+    }
   }
 
   function focusAndSetDate(element, date) {
-    element.focus();
-    element.value = date;
-    element.dispatchEvent(new Event('input', { bubbles: true }));
-    element.dispatchEvent(new Event('change', { bubbles: true }));
+    if (element) {
+      element.focus();
+      element.value = date;
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+      console.error('Element not found for setting date');
+    }
   }
 
   async function checkNextDate() {
@@ -109,22 +125,31 @@ function processDates(dates) {
     const date = dates[currentIndex];
     console.log(`Processing date: ${date}`);
 
-    // Click on start date element and inject date
     const startDateElement = document.getElementById('startDate');
+    if (!startDateElement) {
+      console.error('Start date element not found');
+      return;
+    }
     clickElement(startDateElement);
     await new Promise(resolve => setTimeout(resolve, 500));
     focusAndSetDate(startDateElement, date);
     console.log(`Injected start date: ${date}`);
 
-    // Click on end date element and inject date
     const endDateElement = document.getElementById('endDate');
+    if (!endDateElement) {
+      console.error('End date element not found');
+      return;
+    }
     clickElement(endDateElement);
     await new Promise(resolve => setTimeout(resolve, 500));
     focusAndSetDate(endDateElement, date);
     console.log(`Injected end date: ${date}`);
 
-    // Click the Continue button
     const continueButton = document.querySelector('button.button--primary[type="submit"]');
+    if (!continueButton) {
+      console.error('Continue button not found');
+      return;
+    }
     clickElement(continueButton);
     console.log('Clicked Continue button');
 
@@ -134,7 +159,7 @@ function processDates(dates) {
 
     chrome.storage.local.get('results', (data) => {
       let results = data.results || [];
-      results = results.filter(item => item.date !== date); // Remove any existing entry for the same date
+      results = results.filter(item => item.date !== date);
       results.push({ date, status });
 
       chrome.storage.local.set({ results }, () => {
@@ -142,7 +167,6 @@ function processDates(dates) {
       });
       console.log(`Date ${date} is ${status}`);
 
-      // Press the browser's back button
       window.history.back();
       setTimeout(() => {
         currentIndex++;
@@ -154,7 +178,6 @@ function processDates(dates) {
   checkNextDate();
 }
 
-// Load existing results when the popup opens
 chrome.storage.local.get('results', (data) => {
   updatePopupTable(data.results || []);
 });

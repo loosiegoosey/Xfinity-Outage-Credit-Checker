@@ -11,40 +11,66 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     function clickElement(element) {
-      element.dispatchEvent(createMouseEvent('mousedown'));
-      element.dispatchEvent(createMouseEvent('mouseup'));
-      element.dispatchEvent(createMouseEvent('click'));
+      if (element) {
+        element.dispatchEvent(createMouseEvent('mousedown'));
+        element.dispatchEvent(createMouseEvent('mouseup'));
+        element.dispatchEvent(createMouseEvent('click'));
+      } else {
+        console.error('Element not found for clicking');
+      }
     }
 
     function focusAndSetDate(element, date) {
-      element.focus();
-      element.value = date;
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
+      if (element) {
+        element.focus();
+        element.value = date;
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+      } else {
+        console.error('Element not found for setting date');
+      }
     }
 
-    // Click on start date element and inject date
     const startDateElement = document.getElementById('startDate');
+    if (!startDateElement) {
+      console.error('Start date element not found');
+      sendResponse({ status: 'Error: Start date element not found' });
+      return;
+    }
     clickElement(startDateElement);
     setTimeout(() => {
       focusAndSetDate(startDateElement, date);
 
-      // Click on end date element and inject date
       const endDateElement = document.getElementById('endDate');
+      if (!endDateElement) {
+        console.error('End date element not found');
+        sendResponse({ status: 'Error: End date element not found' });
+        return;
+      }
       clickElement(endDateElement);
       setTimeout(() => {
         focusAndSetDate(endDateElement, date);
 
-        // Click the Continue button
         const continueButton = document.querySelector('button.button--primary[type="submit"]');
+        if (!continueButton) {
+          console.error('Continue button not found');
+          sendResponse({ status: 'Error: Continue button not found' });
+          return;
+        }
         clickElement(continueButton);
 
-        setTimeout(() => {
+        const observer = new MutationObserver((mutations, obs) => {
           const isIneligible = document.body.innerText.includes("isn't eligible for a credit at this time");
-          sendResponse({ status: isIneligible ? 'Not Eligible' : 'Eligible' });
-        }, 3000); // Wait for the new page to load and check for eligibility
-      }, 500); // Wait for the end date element to be focused and value set
-    }, 500); // Wait for the start date element to be focused and value set
+          const isEligible = document.body.innerText.includes("eligible for a credit");
+          if (isIneligible || isEligible) {
+            obs.disconnect();
+            sendResponse({ status: isIneligible ? 'Not Eligible' : 'Eligible' });
+          }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+      }, 500);
+    }, 500);
   }
-  return true; // Keeps the message channel open for sendResponse
+  return true;
 });
